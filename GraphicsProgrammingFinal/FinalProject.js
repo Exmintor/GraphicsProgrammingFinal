@@ -1,20 +1,21 @@
 ﻿//Vertex Shader
 var VSHADER_SOURCE =
     'attribute vec4 a_Position;\n' +
-    'attribute vec4 a_Color;\n' +
+    'attribute vec2 a_TexCoord;\n' +
     'uniform mat4 u_MvpMatrix;\n' +
-    'varying vec4 v_Color;\n' +
+    'varying vec2 v_TexCoord;\n' +
     'void main() {\n' +
     '   gl_Position = u_MvpMatrix * a_Position;\n' +
-    '   v_Color = a_Color;\n' +
+    '   v_TexCoord = a_TexCoord;\n' +
     '}\n';
 
 //Fragment Shader
 var FSHADER_SOURCE =
     'precision mediump float;\n' +
-    'varying vec4 v_Color;\n' +
+    'uniform sampler2D u_Sampler;\n' +
+    'varying vec2 v_TexCoord;\n' +
     'void main() {\n' +
-    '   gl_FragColor = v_Color;\n' +
+    '   gl_FragColor = texture2D(u_Sampler, v_TexCoord);\n' +
     '}\n';
 
 //OBJ file
@@ -90,11 +91,6 @@ function main() {
         return;
     }
 
-    //Set color for clearing canvas to black
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
-    //Enable the hidden surface removal
-    gl.enable(gl.DEPTH_TEST);
-
     //Initialize shaders
     if (!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
         console.log('Failed to initialize shaders.');
@@ -126,11 +122,11 @@ function main() {
     //Pass the mvp matrix to the vertex shader
     gl.uniformMatrix4fv(u_MvpMatrix, false, mvpMatrix.elements);
 
-    //Clear the canvas and depth buffer
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-    //Draw the cube
-    gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
+    //Set the textures
+    if (!initTextures(gl, n)) {
+        console.log('Failed to set the positions of the vertices');
+        return;
+    }
 }
 
 function initVertexBuffers(gl) {
@@ -144,13 +140,13 @@ function initVertexBuffers(gl) {
         1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0   // v4-v7-v6-v5 back
     ]);
     //Color
-    var colors = new Float32Array([
-        0.4, 0.4, 1.0, 0.4, 0.4, 1.0, 0.4, 0.4, 1.0, 0.4, 0.4, 1.0,  // v0-v1-v2-v3 front(blue)
-        0.4, 1.0, 0.4, 0.4, 1.0, 0.4, 0.4, 1.0, 0.4, 0.4, 1.0, 0.4,  // v0-v3-v4-v5 right(green)
-        1.0, 0.4, 0.4, 1.0, 0.4, 0.4, 1.0, 0.4, 0.4, 1.0, 0.4, 0.4,  // v0-v5-v6-v1 up(red)
-        1.0, 1.0, 0.4, 1.0, 1.0, 0.4, 1.0, 1.0, 0.4, 1.0, 1.0, 0.4,  // v1-v6-v7-v2 left
-        1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,  // v7-v4-v3-v2 down
-        0.4, 1.0, 1.0, 0.4, 1.0, 1.0, 0.4, 1.0, 1.0, 0.4, 1.0, 1.0   // v4-v7-v6-v5 back
+    var texCoords = new Float32Array([
+        0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, // v0-v1-v2-v3 front(blue)
+        0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, // v0-v3-v4-v5 right(green)
+        0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, // v0-v5-v6-v1 up(red)
+        0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, // v1-v6-v7-v2 left
+        0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, // v7-v4-v3-v2 down
+        0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0 // v4-v7-v6-v5 back
     ]);
 
     // Indices of the vertices
@@ -174,7 +170,7 @@ function initVertexBuffers(gl) {
     if (!initArrayBuffer(gl, vertices, 3, gl.FLOAT, 'a_Position'))
         return -1;
     //Write the colors to a new buffer object
-    if (!initArrayBuffer(gl, colors, 3, gl.FLOAT, 'a_Color'))
+    if (!initArrayBuffer(gl, texCoords, 2, gl.FLOAT, 'a_TexCoord'))
         return -1;
 
     //Write the indices to the buffer object
@@ -209,4 +205,61 @@ function initArrayBuffer(gl, data, num, type, attribute) {
     gl.enableVertexAttribArray(a_attribute);
 
     return true;
+}
+
+function initTextures(gl, n) {
+    //Create texture object
+    var texture = gl.createTexture();
+    if (!texture) {
+        console.log('Failed to create the texture object.');
+        return -1;
+    }
+
+    //Get storage location of u_Sampler
+    var u_Sampler = gl.getUniformLocation(gl.program, 'u_Sampler');
+    if (u_Sampler < 0) {
+        console.log('Failed to get the storage location of u_Sampler');
+        return;
+    }
+
+    //Crate an image object
+    var image = new Image();
+    if (!image) {
+        console.log('Failed to create the image object.');
+        return -1;
+    }
+
+    //Register the event handler to be called on loading an image
+    image.onload = function () { loadTexture(gl, n, texture, u_Sampler, image); };
+    //Tell the browser to load an image
+    image.src = 'resources/texture.png';
+
+    return true;
+}
+
+function loadTexture(gl, n, texture, u_Sampler, image) {
+    //Flip the image's y axis
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
+    //Enable the texture unit 0
+    gl.activeTexture(gl.TEXTURE0);
+    //Bind the texture object to the target
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+
+    //Set the texture parameters
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    //Set the texture image
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+
+    //Set the texture unit 0 to the sampler
+    gl.uniform1i(u_Sampler, 0);
+
+    //Set color for clearing canvas to black
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    //Enable the hidden surface removal
+    gl.enable(gl.DEPTH_TEST);
+    //Clear the canvas and depth buffer
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    //Draw the cube
+    gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
 }
