@@ -23,14 +23,14 @@ var OBJ_SOURCE =
 '# This file uses centimeters as units for non- parametric coordinates.\n' +
 'mtllib RobertBox.mtl\n' +
 'g default\n' +
-'v - 3.269264 - 3.269264 3.269264\n' +
-'v 3.269264 - 3.269264 3.269264\n' +
-'v - 3.269264 3.269264 3.269264\n' +
+'v -3.269264 -3.269264 3.269264\n' +
+'v 3.269264 -3.269264 3.269264\n' +
+'v -3.269264 3.269264 3.269264\n' +
 'v 3.269264 3.269264 3.269264\n' +
-'v - 3.269264 3.269264 - 3.269264\n' +
-'v 3.269264 3.269264 - 3.269264\n' +
-'v - 3.269264 - 3.269264 - 3.269264\n' +
-'v 3.269264 - 3.269264 - 3.269264\n' +
+'v -3.269264 3.269264 -3.269264\n' +
+'v 3.269264 3.269264 -3.269264\n' +
+'v -3.269264 - 3.269264 -3.269264\n' +
+'v 3.269264 -3.269264 -3.269264\n' +
 'vt 0.383749 0.499803\n' +
 'vt 0.624411 0.499802\n' +
 'vt 0.624411 0.740465\n' + 
@@ -53,31 +53,31 @@ var OBJ_SOURCE =
 'vn 0.000000 1.000000 0.000000\n' +
 'vn 0.000000 1.000000 0.000000\n' +
 'vn 0.000000 1.000000 0.000000\n' +
-'vn 0.000000 0.000000 - 1.000000\n' +
-'vn 0.000000 0.000000 - 1.000000\n' +
-'vn 0.000000 0.000000 - 1.000000\n' +
-'vn 0.000000 0.000000 - 1.000000\n' +
-'vn 0.000000 - 1.000000 0.000000\n' +
-'vn 0.000000 - 1.000000 0.000000\n' +
-'vn 0.000000 - 1.000000 0.000000\n' +
-'vn 0.000000 - 1.000000 0.000000\n' +
+'vn 0.000000 0.000000 -1.000000\n' +
+'vn 0.000000 0.000000 -1.000000\n' +
+'vn 0.000000 0.000000 -1.000000\n' +
+'vn 0.000000 0.000000 -1.000000\n' +
+'vn 0.000000 -1.000000 0.000000\n' +
+'vn 0.000000 -1.000000 0.000000\n' +
+'vn 0.000000 -1.000000 0.000000\n' +
+'vn 0.000000 -1.000000 0.000000\n' +
 'vn 1.000000 0.000000 0.000000\n' +
 'vn 1.000000 0.000000 0.000000\n' +
 'vn 1.000000 0.000000 0.000000\n' +
 'vn 1.000000 0.000000 0.000000\n' +
-'vn - 1.000000 0.000000 0.00000\n' +
-'vn - 1.000000 0.000000 0.000000\n' +
-'vn - 1.000000 0.000000 0.000000\n' +
-'vn - 1.000000 0.000000 0.000000\n' +
+'vn -1.000000 0.000000 0.00000\n' +
+'vn -1.000000 0.000000 0.000000\n' +
+'vn -1.000000 0.000000 0.000000\n' +
+'vn -1.000000 0.000000 0.000000\n' +
 's off\n' +
 'g pCube1\n' +
 'usemtl initialShadingGroup\n' +
-'f 1/ 11 / 1 2/ 1 / 2 4/ 4 / 3 3/ 12 / 4\n' +
-'f 3/ 9 / 5 4/ 4 / 6 6/ 3 / 7 5/ 10 / 8\n' +
-'f 5/ 13 / 9 6/ 3 / 10 8/ 2 / 11 7/ 14 / 12\n' +
-'f 7/ 5 / 13 8/ 2 / 14 2/ 1 / 15 1/ 6 / 16\n' +
-'f 2/ 1 / 17 8/ 2 / 18 6/ 3 / 19 4/ 4 / 20\n' +
-'f 7/ 5 / 21 1/ 6 / 22 3/ 7 / 23 5/ 8 / 24\n';
+'f 1/11/1 2/1/2 4/4/3 3/12/4\n' +
+'f 3/9/5 4/4/6 6/3/7 5/10/8\n' +
+'f 5/13/9 6/3/10 8/2/11 7/14/12\n' +
+'f 7/5/13 8/2/14 2/1/15 1/6/16\n' +
+'f 2/1/17 8/2/18 6/3/19 4/4/20\n' +
+'f 7/5/21 1/6/22 3/7/23 5/8/24\n';
 
 //Main Function
 function main() {
@@ -114,10 +114,9 @@ function main() {
     //Create the MVP matrix
     var mvpMatrix = new Matrix4();
 
-
     //Calculate the MVP matrix
     mvpMatrix.setPerspective(30, 1, 1, 100);
-    mvpMatrix.lookAt(3, 3, 7, 0, 0, 0, 0, 1, 0);
+    mvpMatrix.lookAt(23, 13, 37, 0, 0, 0, 0, 1, 0);
 
     //Pass the mvp matrix to the vertex shader
     gl.uniformMatrix4fv(u_MvpMatrix, false, mvpMatrix.elements);
@@ -130,24 +129,44 @@ function main() {
 }
 
 function initVertexBuffers(gl) {
+    var objString = OBJ_SOURCE;
+
     //Vertex coordinates
-    var vertices = new Float32Array([
-        1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0,  // v0-v1-v2-v3 front
-        1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0,  // v0-v3-v4-v5 right
-        1.0, 1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0,  // v0-v5-v6-v1 up
-        -1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0,  // v1-v6-v7-v2 left
-        -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0,  // v7-v4-v3-v2 down
-        1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0   // v4-v7-v6-v5 back
-    ]);
-    //Color
-    var texCoords = new Float32Array([
-        1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, // v0-v1-v2-v3 front(blue)
-        1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, // v0-v3-v4-v5 right(green)
-        1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, // v0-v5-v6-v1 up(red)
-        1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, // v1-v6-v7-v2 left
-        1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, // v7-v4-v3-v2 down
-        1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0 // v4-v7-v6-v5 back
-    ]);
+    var tempVertices = parseVertexes(objString);
+    var vertexIndexes = parseIndex(objString, 'vertex');
+    var numVertexes = vertexIndexes.length;
+    var vertices = new Float32Array(numVertexes * 3);
+    for (var i = 0; i < numVertexes; i++) {
+        vertices[i * 3] = tempVertices[vertexIndexes[i] * 3];
+        vertices[i * 3 + 1] = tempVertices[vertexIndexes[i] * 3 + 1];
+        vertices[i * 3 + 2] = tempVertices[vertexIndexes[i] * 3 + 2];
+    }
+    //var vertices = new Float32Array([
+    //    1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0,  // v0-v1-v2-v3 front
+    //    1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0,  // v0-v3-v4-v5 right
+    //    1.0, 1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0,  // v0-v5-v6-v1 up
+    //    -1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0,  // v1-v6-v7-v2 left
+    //    -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0,  // v7-v4-v3-v2 down
+    //    1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0   // v4-v7-v6-v5 back
+    //]);
+
+    //Texture Coordinates
+    var tempTexCoords = parseTextureCoordinates(objString);
+    var textureIndexes = parseIndex(objString, 'texture');
+    var numTextures = textureIndexes.length;
+    var texCoords = new Float32Array(numTextures * 2);
+    for (var i = 0; i < numTextures; i++) {
+        texCoords[i * 2] = tempTexCoords[textureIndexes[i] * 2];
+        texCoords[i * 2 + 1] = tempTexCoords[textureIndexes[i] * 2 + 1];
+    }
+    //var texCoords = new Float32Array([
+    //    1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, // v0-v1-v2-v3 front(blue)
+    //    1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, // v0-v3-v4-v5 right(green)
+    //    1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, // v0-v5-v6-v1 up(red)
+    //    1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, // v1-v6-v7-v2 left
+    //    1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, // v7-v4-v3-v2 down
+    //    1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0 // v4-v7-v6-v5 back
+    //]);
 
     // Indices of the vertices
     var indices = new Uint8Array([
@@ -169,7 +188,7 @@ function initVertexBuffers(gl) {
     //Write the vertex coordinates to a new buffer object
     if (!initArrayBuffer(gl, vertices, 3, gl.FLOAT, 'a_Position'))
         return -1;
-    //Write the colors to a new buffer object
+    //Write the texture coordinates to a new buffer object
     if (!initArrayBuffer(gl, texCoords, 2, gl.FLOAT, 'a_TexCoord'))
         return -1;
 
@@ -260,6 +279,161 @@ function loadTexture(gl, n, texture, u_Sampler, image) {
     //Clear the canvas and depth buffer
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    //Draw the cube
+    //Draw the image
     gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
+}
+
+function parseVertexes(objString) {
+    var vertexArray = new Array(0);
+
+    var lines = objString.split('\n');
+    lines.push(null);
+    var index = 0;
+
+    var line;
+    var sp = new StringParser();
+    while ((line = lines[index++]) != null) {
+        sp.init(line);
+        var command = sp.getWord();
+        if (command == null)
+            continue;
+        if (command == 'v') {
+            var x = sp.getFloat();
+            var y = sp.getFloat();
+            var z = sp.getFloat();
+            vertexArray.push(x);
+            vertexArray.push(y);
+            vertexArray.push(z);
+        }
+    }
+
+    return vertexArray;
+}
+
+function parseTextureCoordinates(objString) {
+    var coordinateArray = new Array(0);
+
+    var lines = objString.split('\n');
+    lines.push(null);
+    var index = 0;
+
+    var line;
+    var sp = new StringParser();
+    while ((line = lines[index++]) != null) {
+        sp.init(line);
+        var command = sp.getWord();
+        if (command == null)
+            continue;
+        if (command == 'vt') {
+            var u = sp.getFloat();
+            var v = sp.getFloat();
+            coordinateArray.push(u);
+            coordinateArray.push(v);
+        }
+    }
+
+    return coordinateArray;
+}
+
+function parseIndex(objString, vtn) {
+    var indexes = new Array(0);
+
+    var lines = objString.split('\n');
+    lines.push(null);
+    var index = 0;
+
+    var line;
+    var sp = new StringParser();
+    while ((line = lines[index++]) != null) {
+        sp.init(line);
+        var command = sp.getWord();
+        if (command == null)
+            continue;
+        if (command == 'f') {
+            for (; ;) {
+                var word = sp.getWord();
+                if (word == null)
+                    break;
+                var subWords = word.split('/');
+                if (vtn == 'vertex') {
+                    var vertexIndex = parseInt(subWords[0]) - 1;
+                    indexes.push(vertexIndex);
+                }
+                if (vtn == 'texture') {
+                    var textureIndex = parseInt(subWords[1]) - 1;
+                    indexes.push(textureIndex);
+                }
+                if (vtn == 'normal') {
+                    var normalIndex = parseInt(subWords[2]) - 1;
+                    indexes.push(normalIndex);
+                }
+            }
+        }
+    }
+
+    return indexes;
+}
+
+
+//---STRING PARSER------------------------------------------------------
+// Constructor
+var StringParser = function (str) {
+    this.str;   // Store the string specified by the argument
+    this.index; // Position in the string to be processed
+    this.init(str);
+}
+// Initialize StringParser object
+StringParser.prototype.init = function (str) {
+    this.str = str;
+    this.index = 0;
+}
+
+// Skip delimiters
+StringParser.prototype.skipDelimiters = function () {
+    for (var i = this.index, len = this.str.length; i < len; i++) {
+        var c = this.str.charAt(i);
+        // Skip TAB, Space, '(', ')
+        if (c == '\t' || c == ' ' || c == '(' || c == ')' || c == '"') continue;
+        break;
+    }
+    this.index = i;
+}
+
+// Skip to the next word
+StringParser.prototype.skipToNextWord = function () {
+    this.skipDelimiters();
+    var n = getWordLength(this.str, this.index);
+    this.index += (n + 1);
+}
+
+// Get word
+StringParser.prototype.getWord = function () {
+    this.skipDelimiters();
+    var n = getWordLength(this.str, this.index);
+    if (n == 0) return null;
+    var word = this.str.substr(this.index, n);
+    this.index += (n + 1);
+
+    return word;
+}
+
+// Get integer
+StringParser.prototype.getInt = function () {
+    return parseInt(this.getWord());
+}
+
+// Get floating number
+StringParser.prototype.getFloat = function () {
+    return parseFloat(this.getWord());
+}
+
+// Get the length of word
+function getWordLength(str, start) {
+    var n = 0;
+    for (var i = start, len = str.length; i < len; i++) {
+        var c = str.charAt(i);
+        if (c == '\t' || c == ' ' || c == '(' || c == ')' || c == '"')
+            break;
+    }
+    return i - start;
 }
