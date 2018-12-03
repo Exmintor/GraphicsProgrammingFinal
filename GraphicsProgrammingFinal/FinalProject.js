@@ -190,10 +190,10 @@ function initVertexBuffers(gl) {
     //    1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0 // v4-v7-v6-v5 back
     //]);
 
-    var indices = new Uint32Array(numVertexes / 3);
-    for (var i = 0; i < indices.length; i++) {
-        indices[i] = i;
-    }
+    //var indices = new Uint32Array(numVertexes / 3);
+    //for (var i = 0; i < indices.length; i++) {
+    //    indices[i] = i;
+    //}
     // Indices of the vertices
     //var indices = new Uint8Array([
     //    0, 1, 2, 0, 2, 3,    // front
@@ -205,11 +205,15 @@ function initVertexBuffers(gl) {
     //]);
 
     //Create buffer object
-    var indexBuffer = gl.createBuffer();
-    if (!indexBuffer) {
-        console.log('Failed to create the buffer object.');
-        return -1;
-    }
+    //var indexBuffer = gl.createBuffer();
+    //if (!indexBuffer) {
+    //    console.log('Failed to create the buffer object.');
+    //    return -1;
+    //}
+
+    //Write the indices to the buffer object
+    //gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    //gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
     //Write the vertex coordinates to a new buffer object
     if (!initArrayBuffer(gl, vertices, 3, gl.FLOAT, 'a_Position'))
@@ -218,11 +222,7 @@ function initVertexBuffers(gl) {
     if (!initArrayBuffer(gl, texCoords, 2, gl.FLOAT, 'a_TexCoord'))
         return -1;
 
-    //Write the indices to the buffer object
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
-
-    return indices.length;
+    return numVertexes / 3;
 }
 
 function initArrayBuffer(gl, data, num, type, attribute) {
@@ -306,7 +306,7 @@ function loadTexture(gl, n, texture, u_Sampler, image) {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     //Draw the image
-    gl.drawArrays(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
+    gl.drawArrays(gl.TRIANGLES, 0, n);
 }
 
 function parseVertexes(objString) {
