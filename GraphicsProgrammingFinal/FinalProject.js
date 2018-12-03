@@ -222,7 +222,7 @@ function initVertexBuffers(gl) {
     if (!initArrayBuffer(gl, texCoords, 2, gl.FLOAT, 'a_TexCoord'))
         return -1;
 
-    return numVertexes / 3;
+    return numVertexes;
 }
 
 function initArrayBuffer(gl, data, num, type, attribute) {
