@@ -126,6 +126,9 @@ function main() {
         console.log('Failed to set the positions of the vertices');
         return;
     }
+
+    canvas.onmousedown = function () { lockMouse(canvas); };
+    canvas.onmouseup = function () { unlockMouse(); };
 }
 
 function initVertexBuffers(gl) {
@@ -372,6 +375,13 @@ function parseIndex(objString, vtn) {
     }
 
     return indexes;
+}
+
+function lockMouse(canvas) {
+    canvas.requestPointerLock();
+}
+function unlockMouse() {
+    document.exitPointerLock();
 }
 
 
