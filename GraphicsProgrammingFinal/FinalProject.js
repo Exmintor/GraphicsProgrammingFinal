@@ -20,65 +20,6 @@ var FSHADER_SOURCE =
 
 //OBJ file
 var OBJ_SOURCE = null;
-//var OBJ_SOURCE = 
-//'# This file uses centimeters as units for non- parametric coordinates.\n' +
-//'mtllib RobertBox.mtl\n' +
-//'g default\n' +
-//'v -3.269264 -3.269264 3.269264\n' +
-//'v 3.269264 -3.269264 3.269264\n' +
-//'v -3.269264 3.269264 3.269264\n' +
-//'v 3.269264 3.269264 3.269264\n' +
-//'v -3.269264 3.269264 -3.269264\n' +
-//'v 3.269264 3.269264 -3.269264\n' +
-//'v -3.269264 - 3.269264 -3.269264\n' +
-//'v 3.269264 -3.269264 -3.269264\n' +
-//'vt 0.383749 0.499803\n' +
-//'vt 0.624411 0.499802\n' +
-//'vt 0.624411 0.740465\n' + 
-//'vt 0.383749 0.740464\n' +
-//'vt 0.624411 0.259140\n' +
-//'vt 0.383749 0.259141\n' +
-//'vt 0.383749 0.018479\n' +
-//'vt 0.624411 0.018478\n' +
-//'vt 0.383749 0.981126\n' +
-//'vt 0.624411 0.981127\n' +
-//'vt 0.143087 0.499803\n' +
-//'vt 0.143087 0.740465\n' +
-//'vt 0.865073 0.740465\n' +
-//'vt 0.865073 0.499803\n' +
-//'vn 0.000000 0.000000 1.000000\n' +
-//'vn 0.000000 0.000000 1.000000\n' +
-//'vn 0.000000 0.000000 1.000000\n' +
-//'vn 0.000000 0.000000 1.000000\n' +
-//'vn 0.000000 1.000000 0.000000\n' +
-//'vn 0.000000 1.000000 0.000000\n' +
-//'vn 0.000000 1.000000 0.000000\n' +
-//'vn 0.000000 1.000000 0.000000\n' +
-//'vn 0.000000 0.000000 -1.000000\n' +
-//'vn 0.000000 0.000000 -1.000000\n' +
-//'vn 0.000000 0.000000 -1.000000\n' +
-//'vn 0.000000 0.000000 -1.000000\n' +
-//'vn 0.000000 -1.000000 0.000000\n' +
-//'vn 0.000000 -1.000000 0.000000\n' +
-//'vn 0.000000 -1.000000 0.000000\n' +
-//'vn 0.000000 -1.000000 0.000000\n' +
-//'vn 1.000000 0.000000 0.000000\n' +
-//'vn 1.000000 0.000000 0.000000\n' +
-//'vn 1.000000 0.000000 0.000000\n' +
-//'vn 1.000000 0.000000 0.000000\n' +
-//'vn -1.000000 0.000000 0.00000\n' +
-//'vn -1.000000 0.000000 0.000000\n' +
-//'vn -1.000000 0.000000 0.000000\n' +
-//'vn -1.000000 0.000000 0.000000\n' +
-//'s off\n' +
-//'g pCube1\n' +
-//'usemtl initialShadingGroup\n' +
-//'f 1/11/1 2/1/2 4/4/3 3/12/4\n' +
-//'f 3/9/5 4/4/6 6/3/7 5/10/8\n' +
-//'f 5/13/9 6/3/10 8/2/11 7/14/12\n' +
-//'f 7/5/13 8/2/14 2/1/15 1/6/16\n' +
-//'f 2/1/17 8/2/18 6/3/19 4/4/20\n' +
-//'f 7/5/21 1/6/22 3/7/23 5/8/24\n';
 
 //Main Function
 function main() {
@@ -163,14 +104,6 @@ function initVertexBuffers(gl) {
         vertices[i * 3 + 1] = tempVertices[vertexIndexes[i] * 3 + 1];
         vertices[i * 3 + 2] = tempVertices[vertexIndexes[i] * 3 + 2];
     }
-    //var vertices = new Float32Array([
-    //    1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0,  // v0-v1-v2-v3 front
-    //    1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0,  // v0-v3-v4-v5 right
-    //    1.0, 1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0,  // v0-v5-v6-v1 up
-    //    -1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0,  // v1-v6-v7-v2 left
-    //    -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0,  // v7-v4-v3-v2 down
-    //    1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0   // v4-v7-v6-v5 back
-    //]);
 
     //Texture Coordinates
     var tempTexCoords = parseTextureCoordinates(objString);
@@ -181,39 +114,6 @@ function initVertexBuffers(gl) {
         texCoords[i * 2] = tempTexCoords[textureIndexes[i] * 2];
         texCoords[i * 2 + 1] = tempTexCoords[textureIndexes[i] * 2 + 1];
     }
-    //var texCoords = new Float32Array([
-    //    1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, // v0-v1-v2-v3 front(blue)
-    //    1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, // v0-v3-v4-v5 right(green)
-    //    1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, // v0-v5-v6-v1 up(red)
-    //    1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, // v1-v6-v7-v2 left
-    //    1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, // v7-v4-v3-v2 down
-    //    1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0 // v4-v7-v6-v5 back
-    //]);
-
-    //var indices = new Uint32Array(numVertexes / 3);
-    //for (var i = 0; i < indices.length; i++) {
-    //    indices[i] = i;
-    //}
-    // Indices of the vertices
-    //var indices = new Uint8Array([
-    //    0, 1, 2, 0, 2, 3,    // front
-    //    4, 5, 6, 4, 6, 7,    // right
-    //    8, 9, 10, 8, 10, 11,    // up
-    //    12, 13, 14, 12, 14, 15,    // left
-    //    16, 17, 18, 16, 18, 19,    // down
-    //    20, 21, 22, 20, 22, 23     // back
-    //]);
-
-    //Create buffer object
-    //var indexBuffer = gl.createBuffer();
-    //if (!indexBuffer) {
-    //    console.log('Failed to create the buffer object.');
-    //    return -1;
-    //}
-
-    //Write the indices to the buffer object
-    //gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-    //gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
     //Write the vertex coordinates to a new buffer object
     if (!initArrayBuffer(gl, vertices, 3, gl.FLOAT, 'a_Position'))
