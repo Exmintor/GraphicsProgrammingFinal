@@ -21,6 +21,11 @@ var FSHADER_SOURCE =
 //OBJ file
 var OBJ_SOURCE = null;
 
+var canMove = false;
+var textureLoaded = false;
+var lastX = 0;
+var lastY = 0;
+
 //Main Function
 function main() {
     readOBJ('resources/Skull.txt');
@@ -76,7 +81,8 @@ function start() {
 
     //Calculate the MVP matrix
     mvpMatrix.setPerspective(30, 1, 1, 100);
-    mvpMatrix.lookAt(1, 1, 7, 0, 0, 0, 0, 1, 0);
+    mvpMatrix.lookAt(0, 0, 7, 0, 0, 0, 0, 1, 0);
+    mvpMatrix.translate(0, 0, 0);
 
     //Pass the mvp matrix to the vertex shader
     gl.uniformMatrix4fv(u_MvpMatrix, false, mvpMatrix.elements);
@@ -87,8 +93,42 @@ function start() {
         return;
     }
 
+    canvas.onmousemove = function (ev) { rotateObject(ev, gl, mvpMatrix, u_MvpMatrix, n) };
     canvas.onmousedown = function () { lockMouse(canvas); };
     canvas.onmouseup = function () { unlockMouse(); };
+}
+
+function rotateObject(ev, gl, mvpMatrix, u_MvpMatrix, n) {
+    if (canMove) {
+        var x = ev.clientX;
+        var y = ev.clientY;
+        var xOffset = lastX - x;
+        var yOffset = lastY - y;
+        var xRotationAngle = 0;
+        var yRotationAngle = 0;
+        if (xOffset >= 0) {
+            xRotationAngle = -2;
+        }
+        else if (xOffset < 0) {
+            xRotationAngle = 2;
+        }
+        if (yOffset >= 0) {
+            yRotationAngle = -2;
+        }
+        else if (yOffset < 0) {
+            yRotationAngle = 2;
+        }
+        mvpMatrix.rotate(xRotationAngle, 0, 1, 0);
+        mvpMatrix.rotate(yRotationAngle, 1, 0, 0);
+
+        //Pass the mvp matrix to the vertex shader
+        gl.uniformMatrix4fv(u_MvpMatrix, false, mvpMatrix.elements);
+        if (textureLoaded) {
+            draw(gl, n);
+        }
+        lastX = x;
+        lastY = y;
+    }
 }
 
 function initVertexBuffers(gl) {
@@ -198,6 +238,11 @@ function loadTexture(gl, n, texture, u_Sampler, image) {
     //Set the texture unit 0 to the sampler
     gl.uniform1i(u_Sampler, 0);
 
+    textureLoaded = true;
+    draw(gl, n);
+}
+
+function draw(gl, n) {
     //Set color for clearing canvas to black
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     //Enable the hidden surface removal
@@ -301,10 +346,12 @@ function parseIndex(objString, vtn) {
 }
 
 function lockMouse(canvas) {
-    canvas.requestPointerLock();
+    //canvas.requestPointerLock();
+    canMove = true;
 }
 function unlockMouse() {
-    document.exitPointerLock();
+    //document.exitPointerLock();
+    canMove = false;
 }
 
 
