@@ -19,68 +19,33 @@ var FSHADER_SOURCE =
     '}\n';
 
 //OBJ file
-var OBJ_SOURCE = 
-'# This file uses centimeters as units for non- parametric coordinates.\n' +
-'mtllib RobertBox.mtl\n' +
-'g default\n' +
-'v -3.269264 -3.269264 3.269264\n' +
-'v 3.269264 -3.269264 3.269264\n' +
-'v -3.269264 3.269264 3.269264\n' +
-'v 3.269264 3.269264 3.269264\n' +
-'v -3.269264 3.269264 -3.269264\n' +
-'v 3.269264 3.269264 -3.269264\n' +
-'v -3.269264 - 3.269264 -3.269264\n' +
-'v 3.269264 -3.269264 -3.269264\n' +
-'vt 0.383749 0.499803\n' +
-'vt 0.624411 0.499802\n' +
-'vt 0.624411 0.740465\n' + 
-'vt 0.383749 0.740464\n' +
-'vt 0.624411 0.259140\n' +
-'vt 0.383749 0.259141\n' +
-'vt 0.383749 0.018479\n' +
-'vt 0.624411 0.018478\n' +
-'vt 0.383749 0.981126\n' +
-'vt 0.624411 0.981127\n' +
-'vt 0.143087 0.499803\n' +
-'vt 0.143087 0.740465\n' +
-'vt 0.865073 0.740465\n' +
-'vt 0.865073 0.499803\n' +
-'vn 0.000000 0.000000 1.000000\n' +
-'vn 0.000000 0.000000 1.000000\n' +
-'vn 0.000000 0.000000 1.000000\n' +
-'vn 0.000000 0.000000 1.000000\n' +
-'vn 0.000000 1.000000 0.000000\n' +
-'vn 0.000000 1.000000 0.000000\n' +
-'vn 0.000000 1.000000 0.000000\n' +
-'vn 0.000000 1.000000 0.000000\n' +
-'vn 0.000000 0.000000 -1.000000\n' +
-'vn 0.000000 0.000000 -1.000000\n' +
-'vn 0.000000 0.000000 -1.000000\n' +
-'vn 0.000000 0.000000 -1.000000\n' +
-'vn 0.000000 -1.000000 0.000000\n' +
-'vn 0.000000 -1.000000 0.000000\n' +
-'vn 0.000000 -1.000000 0.000000\n' +
-'vn 0.000000 -1.000000 0.000000\n' +
-'vn 1.000000 0.000000 0.000000\n' +
-'vn 1.000000 0.000000 0.000000\n' +
-'vn 1.000000 0.000000 0.000000\n' +
-'vn 1.000000 0.000000 0.000000\n' +
-'vn -1.000000 0.000000 0.00000\n' +
-'vn -1.000000 0.000000 0.000000\n' +
-'vn -1.000000 0.000000 0.000000\n' +
-'vn -1.000000 0.000000 0.000000\n' +
-'s off\n' +
-'g pCube1\n' +
-'usemtl initialShadingGroup\n' +
-'f 1/11/1 2/1/2 4/4/3 3/12/4\n' +
-'f 3/9/5 4/4/6 6/3/7 5/10/8\n' +
-'f 5/13/9 6/3/10 8/2/11 7/14/12\n' +
-'f 7/5/13 8/2/14 2/1/15 1/6/16\n' +
-'f 2/1/17 8/2/18 6/3/19 4/4/20\n' +
-'f 7/5/21 1/6/22 3/7/23 5/8/24\n';
+var OBJ_SOURCE = null;
+
+var canMove = false;
+var textureLoaded = false;
+var lastX = 0;
+var lastY = 0;
 
 //Main Function
 function main() {
+    readOBJ('resources/Skull.txt');
+}
+
+function readOBJ(fileName) {
+    var request = new XMLHttpRequest();
+
+    request.onreadystatechange = function () {
+        if (request.readyState === 4 && request.status !== 4) {
+            OBJ_SOURCE = request.responseText;
+            start();
+        }
+    }
+
+    request.open('GET', fileName, true);
+    request.send();
+}
+//Start function
+function start() {
     //Retrieve canvas by ID
     var canvas = document.getElementById('webgl');
 
@@ -116,7 +81,8 @@ function main() {
 
     //Calculate the MVP matrix
     mvpMatrix.setPerspective(30, 1, 1, 100);
-    mvpMatrix.lookAt(23, 13, 37, 0, 0, 0, 0, 1, 0);
+    mvpMatrix.lookAt(0, 0, 7, 0, 0, 0, 0, 1, 0);
+    mvpMatrix.translate(0, 0, 0);
 
     //Pass the mvp matrix to the vertex shader
     gl.uniformMatrix4fv(u_MvpMatrix, false, mvpMatrix.elements);
@@ -125,6 +91,43 @@ function main() {
     if (!initTextures(gl, n)) {
         console.log('Failed to set the positions of the vertices');
         return;
+    }
+
+    canvas.onmousemove = function (ev) { rotateObject(ev, gl, mvpMatrix, u_MvpMatrix, n) };
+    canvas.onmousedown = function () { lockMouse(canvas); };
+    canvas.onmouseup = function () { unlockMouse(); };
+}
+
+function rotateObject(ev, gl, mvpMatrix, u_MvpMatrix, n) {
+    if (canMove) {
+        var x = ev.clientX;
+        var y = ev.clientY;
+        var xOffset = lastX - x;
+        var yOffset = lastY - y;
+        var xRotationAngle = 0;
+        var yRotationAngle = 0;
+        if (xOffset >= 0) {
+            xRotationAngle = -2;
+        }
+        else if (xOffset < 0) {
+            xRotationAngle = 2;
+        }
+        if (yOffset >= 0) {
+            yRotationAngle = -2;
+        }
+        else if (yOffset < 0) {
+            yRotationAngle = 2;
+        }
+        mvpMatrix.rotate(xRotationAngle, 0, 1, 0);
+        mvpMatrix.rotate(yRotationAngle, 1, 0, 0);
+
+        //Pass the mvp matrix to the vertex shader
+        gl.uniformMatrix4fv(u_MvpMatrix, false, mvpMatrix.elements);
+        if (textureLoaded) {
+            draw(gl, n);
+        }
+        lastX = x;
+        lastY = y;
     }
 }
 
@@ -141,14 +144,6 @@ function initVertexBuffers(gl) {
         vertices[i * 3 + 1] = tempVertices[vertexIndexes[i] * 3 + 1];
         vertices[i * 3 + 2] = tempVertices[vertexIndexes[i] * 3 + 2];
     }
-    //var vertices = new Float32Array([
-    //    1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0,  // v0-v1-v2-v3 front
-    //    1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0,  // v0-v3-v4-v5 right
-    //    1.0, 1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0,  // v0-v5-v6-v1 up
-    //    -1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0,  // v1-v6-v7-v2 left
-    //    -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0,  // v7-v4-v3-v2 down
-    //    1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0   // v4-v7-v6-v5 back
-    //]);
 
     //Texture Coordinates
     var tempTexCoords = parseTextureCoordinates(objString);
@@ -159,31 +154,6 @@ function initVertexBuffers(gl) {
         texCoords[i * 2] = tempTexCoords[textureIndexes[i] * 2];
         texCoords[i * 2 + 1] = tempTexCoords[textureIndexes[i] * 2 + 1];
     }
-    //var texCoords = new Float32Array([
-    //    1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, // v0-v1-v2-v3 front(blue)
-    //    1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, // v0-v3-v4-v5 right(green)
-    //    1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, // v0-v5-v6-v1 up(red)
-    //    1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, // v1-v6-v7-v2 left
-    //    1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, // v7-v4-v3-v2 down
-    //    1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0 // v4-v7-v6-v5 back
-    //]);
-
-    // Indices of the vertices
-    var indices = new Uint8Array([
-        0, 1, 2, 0, 2, 3,    // front
-        4, 5, 6, 4, 6, 7,    // right
-        8, 9, 10, 8, 10, 11,    // up
-        12, 13, 14, 12, 14, 15,    // left
-        16, 17, 18, 16, 18, 19,    // down
-        20, 21, 22, 20, 22, 23     // back
-    ]);
-
-    //Create buffer object
-    var indexBuffer = gl.createBuffer();
-    if (!indexBuffer) {
-        console.log('Failed to create the buffer object.');
-        return -1;
-    }
 
     //Write the vertex coordinates to a new buffer object
     if (!initArrayBuffer(gl, vertices, 3, gl.FLOAT, 'a_Position'))
@@ -192,11 +162,7 @@ function initVertexBuffers(gl) {
     if (!initArrayBuffer(gl, texCoords, 2, gl.FLOAT, 'a_TexCoord'))
         return -1;
 
-    //Write the indices to the buffer object
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
-
-    return indices.length;
+    return numVertexes;
 }
 
 function initArrayBuffer(gl, data, num, type, attribute) {
@@ -251,7 +217,7 @@ function initTextures(gl, n) {
     //Register the event handler to be called on loading an image
     image.onload = function () { loadTexture(gl, n, texture, u_Sampler, image); };
     //Tell the browser to load an image
-    image.src = 'resources/texture.png';
+    image.src = 'resources/SkullTexture.jpg';
 
     return true;
 }
@@ -272,6 +238,11 @@ function loadTexture(gl, n, texture, u_Sampler, image) {
     //Set the texture unit 0 to the sampler
     gl.uniform1i(u_Sampler, 0);
 
+    textureLoaded = true;
+    draw(gl, n);
+}
+
+function draw(gl, n) {
     //Set color for clearing canvas to black
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     //Enable the hidden surface removal
@@ -280,7 +251,7 @@ function loadTexture(gl, n, texture, u_Sampler, image) {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     //Draw the image
-    gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
+    gl.drawArrays(gl.TRIANGLES, 0, n);
 }
 
 function parseVertexes(objString) {
@@ -360,7 +331,7 @@ function parseIndex(objString, vtn) {
                     indexes.push(vertexIndex);
                 }
                 if (vtn == 'texture') {
-                    var textureIndex = parseInt(subWords[1]) - 1;
+                    var textureIndex = parseInt(subWords[1] - 1);
                     indexes.push(textureIndex);
                 }
                 if (vtn == 'normal') {
@@ -372,6 +343,15 @@ function parseIndex(objString, vtn) {
     }
 
     return indexes;
+}
+
+function lockMouse(canvas) {
+    //canvas.requestPointerLock();
+    canMove = true;
+}
+function unlockMouse() {
+    //document.exitPointerLock();
+    canMove = false;
 }
 
 
